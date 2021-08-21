@@ -1,4 +1,5 @@
 import pygame
+from Button import *
 import sys, os
 
 pygame.init()
@@ -8,72 +9,66 @@ pygame.font.init()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
+# Necasary stuff
 res = (720, 720)
 WIN = pygame.display.set_mode(res)
+pygame.display.set_caption("Guess the word")
+
+# Fonts and texts
+arial_24 = pygame.font.SysFont('Arial', 24)
+start_btn_text = arial_24.render('Start', True, BLACK)
+
+# Frames for second
 FPS = 60
 
-# Get the entire windows height and width
-height = WIN.get_height()
-width = WIN.get_width()
+# Random images and its ref
+x_pad = 50
+y_pad = 50
+image_width = 150
+image_height = 350
 
-pygame.display.set_caption('Guess the word')
+image_one_container = pygame.Rect(x_pad, y_pad, image_width, image_height)
+image_one_load = pygame.image.load(os.path.join('images', 'image_one.jpg'))
+image_one = pygame.transform.scale(image_one_load, (image_width, image_height))
 
-# Button object
-class Buttons:
+# Draw main relavant stuff.
+def draw_main_win():
+    WIN.fill(WHITE)
+    WIN.blit(start_btn_text, (20, 20))
 
-    def __init__(self, text, font, pos, bg="BLACK", feedback=""):
-        self.x = pos
-        self.y = pos
-        self.font = pygame.font.SysFont('Arial', font, bold=True, italic=False)
-        if feedback == "":
-            self.feedback = text 
-        else:
-            self.feedback = feedback
+    image_one = pygame.Rect(image_one_container.x, image_one_container.y, image_width, image_height)
+    draw_random_images(image_one)
 
-    def change_text(self, text, bg):
-        self.text = self.font.render(text, True, BLACK)
-        self.size = self.text.get_size()
-        self.surface = pygame.Surface(self.size)
-        self.surface.fill(bg)
-        self.surface.blit(self.text, (0, 0))
-        self.rect = pygame.Rect(self.x, self.y, self.size[0], self.size[1])
+    pygame.display.update()
 
-    # When we have constructed our buttons, then i can give the coordinates down here.
-    def show(self):
-        WIN.blit()
+def draw_random_images(image_one):
+    # Going to make a custom object for images like buttons.
+    # Image one
+    pygame.draw.rect(WIN, WHITE, image_one_container)
+    WIN.blit(image_one, (image_one.x, image_one.y))
 
-    def click(self, event):
-        x, y = pygame.mouse.get_pos()
+def clicked_btns():
+    # Find another solution.
+    mouse_pos = pygame.mouse.get_pos()
+    for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if pygame.mouse.get_pressed()[0]:
-                if self.rect.collidepoint(x, y):
-                    self.change_text(self.feedback, bg="red")
+            print(mouse_pos)
 
 def main_loop():
 
     clock = pygame.time.Clock()
-    #mouse = pygame.mouse.get_pos()
-    while True:
 
-        WIN.fill(WHITE)
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pass
 
-
+        draw_main_win()
         clock.tick(FPS)
-        pygame.display.update()
+        clicked_btns()
 
-word_one = Buttons(
-    "Hello there",
-    (100, 100),
-    30,
-    bg="navy",
-    feedback="Button got clicked"
-)
+        pygame.display.update()
 
 main_loop()
